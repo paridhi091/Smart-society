@@ -111,11 +111,12 @@ public class MainGUI extends JFrame {
         flatsTable.setRowSorter(new TableRowSorter<>(flatsModel));
         panel.add(new JScrollPane(flatsTable), BorderLayout.CENTER);
 
-        JPanel form = new JPanel(new GridLayout(1, 9, 5, 5));
+        JPanel form = new JPanel(new GridLayout(1, 10, 5, 5));
         JTextField flatNoField = new JTextField();
         JTextField ownerField = new JTextField();
         JTextField areaField = new JTextField();
         JTextField chargeField = new JTextField();
+        JCheckBox perSqftCheck = new JCheckBox("Amount above is a rate per sqft, not a fixed total");
         JButton addBtn = new JButton("Add Flat");
 
         form.add(new JLabel("Flat No:")); form.add(flatNoField);
@@ -123,6 +124,7 @@ public class MainGUI extends JFrame {
         form.add(new JLabel("Area (sqft):")); form.add(areaField);
         form.add(new JLabel("Monthly Charge:")); form.add(chargeField);
         form.add(addBtn);
+        form.add(perSqftCheck);
 
         addBtn.addActionListener(e -> {
             String flatNo = flatNoField.getText().trim();
@@ -132,15 +134,22 @@ public class MainGUI extends JFrame {
                 return;
             }
             Double area = parseDoubleOrWarn(areaField.getText(), "Area");
-            Double charge = parseDoubleOrWarn(chargeField.getText(), "Monthly Charge");
-            if (area == null || charge == null) return;
+            Double enteredAmount = parseDoubleOrWarn(chargeField.getText(), perSqftCheck.isSelected() ? "Rate per Sqft" : "Monthly Charge");
+            if (area == null || enteredAmount == null) return;
 
-            boolean added = manager.addFlat(new Flat(flatNo, owner, area, charge));
+            double finalCharge = perSqftCheck.isSelected() ? (area * enteredAmount) : enteredAmount;
+
+            boolean added = manager.addFlat(new Flat(flatNo, owner, area, finalCharge));
             if (!added) {
                 JOptionPane.showMessageDialog(this, "A flat with this number already exists.", "Duplicate flat", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            if (perSqftCheck.isSelected()) {
+                JOptionPane.showMessageDialog(this,
+                        String.format("Monthly charge computed as %.2f sqft x %.2f/sqft = %.2f", area, enteredAmount, finalCharge));
+            }
             flatNoField.setText(""); ownerField.setText(""); areaField.setText(""); chargeField.setText("");
+            perSqftCheck.setSelected(false);
             refreshAll();
             persist();
         });

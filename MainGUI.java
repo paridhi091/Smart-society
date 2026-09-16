@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Collection;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 /**
  * Swing desktop GUI for the Housing Society Dues Tracker.
@@ -37,6 +40,10 @@ public class MainGUI extends JFrame {
     // Search tab
     private JTextArea searchResultArea;
 
+    // Charts tab
+    private BarChartPanel collectionsChart;
+    private PieChartPanel duesChart;
+
     public MainGUI() {
         super("Housing Society Dues Tracker");
 
@@ -63,6 +70,7 @@ public class MainGUI extends JFrame {
         tabs.addTab("Generate Bills", buildBillsPanel());
         tabs.addTab("Record Payment", buildPaymentPanel());
         tabs.addTab("Dues Report", buildReportPanel());
+        tabs.addTab("Charts", buildChartsPanel());
         tabs.addTab("Search Flat", buildSearchPanel());
 
         add(tabs);
@@ -440,6 +448,29 @@ public class MainGUI extends JFrame {
         return panel;
     }
 
+    // ---------- Charts tab ----------
+
+    private JPanel buildChartsPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        collectionsChart = new BarChartPanel("Collections per Month");
+        duesChart = new PieChartPanel("Paid vs Pending (All Time)");
+
+        JPanel chartsRow = new JPanel(new GridLayout(1, 2, 10, 10));
+        chartsRow.add(collectionsChart);
+        chartsRow.add(duesChart);
+        panel.add(chartsRow, BorderLayout.CENTER);
+
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 8));
+        JButton refreshBtn = new JButton("Refresh Charts");
+        refreshBtn.addActionListener(e -> refreshAll());
+        bottom.add(refreshBtn);
+        panel.add(bottom, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
     // ---------- Refresh logic ----------
 
     private void refreshAll() {
@@ -447,6 +478,22 @@ public class MainGUI extends JFrame {
         refreshBillsTable();
         refreshPaymentsTable();
         refreshReportTable();
+        refreshCharts();
+    }
+
+    private void refreshCharts() {
+        if (collectionsChart == null || duesChart == null) return;
+
+        Map<String, Double> collectionsByMonth = new TreeMap<>();
+        for (Bill b : manager.getAllBills()) {
+            collectionsByMonth.merge(b.getMonth(), b.getAmountPaid(), Double::sum);
+        }
+        collectionsChart.setData(collectionsByMonth);
+
+        Map<String, Double> duesData = new LinkedHashMap<>();
+        duesData.put("Paid", manager.getTotalCollected());
+        duesData.put("Pending", manager.getTotalPending());
+        duesChart.setData(duesData);
     }
 
     private void refreshFlatsTable() {

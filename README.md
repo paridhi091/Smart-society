@@ -548,60 +548,7 @@ Track Complaint
 
 # Screenshots
 
-Screenshots can be added to demonstrate the working application.
-
-Recommended screenshots include:
-
-### Login Screen
-
-```text
-screenshots/login.png
-```
-
-### Owner Dashboard
-
-```text
-screenshots/owner-dashboard.png
-```
-
-### Tenant Dashboard
-
-```text
-screenshots/tenant-dashboard.png
-```
-
-### Flat Management
-
-```text
-screenshots/flats.png
-```
-
-### Bill Management
-
-```text
-screenshots/bills.png
-```
-
-### User Management
-
-```text
-screenshots/users.png
-```
-
-### Complaint Management
-
-```text
-screenshots/complaints.png
-```
-
-If the screenshots are stored in the repository, they can be displayed in this README using Markdown.
-
-Example:
-
-```markdown
-![Login Screen](screenshots/login.png)
-```
-
+C:\Users\parid\Project\screenshots\Screenshot 2026-09-17 213705.png
 ---
 
 

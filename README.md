@@ -1,17 +1,34 @@
-# The Housing Society Management System
+# Housing Society Management System
 
 ## Overview
 
-The Housing Society Management System is a Java desktop application designed to help housing societies manage flats, maintenance bills, payments, users, and tenant complaints.
+The **Housing Society Management System** is a Java-based application designed to simplify the management of residential society operations.
 
-The system replaces manual registers and spreadsheets with a centralized application where society owners/administrators can manage financial records and tenants can view their own information and raise complaints.
+The system allows society owners/administrators to manage flats, generate monthly maintenance bills, record payments, track pending dues, manage tenant accounts, and handle tenant complaints.
 
-The project provides two interfaces built on the same underlying business logic:
+The project provides **two interfaces**:
 
-- **Console version (`Main.java`)** - menu-driven terminal application
-- **GUI version (`LoginGUI.java`)** - Swing-based application with role-based access
+* **Console-based interface** for command-line execution and automated evaluation.
+* **Graphical User Interface (GUI)** using Java Swing for easier interaction by owners and tenants.
 
-Both interfaces use the same `DuesManager` business logic and CSV-based persistent storage through `FileHandler`.
+The application uses CSV files for persistent data storage, allowing information to remain available between program executions.
+
+---
+
+## Objectives
+
+The main objectives of this project are:
+
+* To digitize common housing society management activities.
+* To maintain flat and owner information.
+* To generate and track monthly maintenance bills.
+* To record and monitor payments.
+* To calculate pending dues and total collections.
+* To provide separate functionality for society owners and tenants.
+* To allow tenants to raise and track complaints.
+* To provide a simple and user-friendly interface.
+* To store application data persistently using CSV files.
+* To demonstrate object-oriented programming and modular Java development.
 
 ---
 
@@ -19,227 +36,647 @@ Both interfaces use the same `DuesManager` business logic and CSV-based persiste
 
 ### 1. Flat Management
 
-- Add new flats
-- Store flat number, owner name, area, and monthly maintenance charge
-- Edit flat details through the GUI
-- Delete flats through the GUI
-- Search flats by flat number
-- View associated bills and payment history
+The system allows the society owner to:
 
-### 2. Monthly Bill Management
-
-- Generate monthly maintenance bills for all registered flats
-- Prevent duplicate bills for the same flat and month
-- Store amount due and amount paid
-- Automatically calculate pending amounts
-- Track `PENDING` and `PAID` bills
-
-### 3. Payment Management
-
-- Record payments against generated bills
-- Support full and partial payments
-- Store payment date and payment mode
-- Automatically update bill payment status
-- View payment history for individual flats
-
-### 4. Dues & Reports
-
-- View all generated bills
-- View pending dues
-- Calculate total amount collected
-- Calculate total amount pending
-- Search individual flats and view their financial history
-
-### 5. User Management
-
-- Owner/administrator account
-- Create tenant accounts
-- Associate tenants with flats
-- Store username, password, name, role, and flat number
-- Role-based access to different dashboards
-
-### 6. Authentication
-
-- Username and password authentication
-- Separate access for:
-  - **Owner**
-  - **Tenant**
-- Invalid login attempts are rejected
-- Users are redirected to the appropriate dashboard based on their role
-
-### 7. Tenant Dashboard
-
-Tenants can access:
-
-- Personal dashboard
-- Their bills
-- Their payment history
-- Their complaints
-
-Tenants only interact with information associated with their registered flat.
-
-### 8. Complaint Management
-
-Tenants can raise complaints related to their flat.
-
-The owner/administrator can:
-
-- View all complaints
-- View open complaints
-- Respond to complaints
-- Mark complaints as completed
-- Track complaint status
-
-Complaint information includes:
-
-- Complaint ID
-- Flat number
-- Tenant name
-- Subject
-- Description
-- Status
-- Response
-- Creation date
-
-### 9. Persistent Storage
-
-All major application data is stored in CSV files:
-
-- `flats.csv`
-- `bills.csv`
-- `payments.csv`
-- `users.csv`
-- `complaints.csv`
-
-Data is loaded when the application starts and saved when changes are made or the application exits.
-
-### 10. Data Validation & Error Handling
-
-- Empty input validation
-- Numeric input validation
-- Flat existence validation
-- Duplicate username prevention
-- Duplicate monthly bill prevention
-- Invalid login handling
-- Invalid complaint ID handling
-- Invalid payment handling
+* Add new flats.
+* Store flat number and owner information.
+* Store flat area.
+* Store monthly maintenance charges.
+* Search for a flat by its flat number.
+* View information associated with a flat.
+* Prevent duplicate flat numbers.
 
 ---
 
-## Technologies / Tools Used
+### 2. Monthly Bill Management
 
-- **Language:** Java
-- **JDK:** Java 17+
-- **GUI:** Java Swing (`javax.swing`)
-- **Storage:** CSV files
-- **File Handling:** `java.io`, `java.nio.file`
-- **Collections:** Java Collections Framework
-- **Version Control:** Git / GitHub
-- **Build:** Standard `javac` / `java` commands
-- **Database:** No external database required
+The application provides maintenance bill management functionality.
+
+Features include:
+
+* Generate monthly bills for all registered flats.
+* Store the billing month.
+* Store the maintenance amount.
+* Prevent duplicate bills for the same flat and month.
+* View all generated bills.
+* View pending bills.
+
+---
+
+### 3. Payment Management
+
+The system allows payments to be recorded against generated bills.
+
+Payment information includes:
+
+* Flat number
+* Billing month
+* Amount paid
+* Payment date
+* Payment mode
+
+Supported payment modes can include:
+
+* Cash
+* Cheque
+* UPI
+* Other payment methods
+
+The system updates the corresponding bill when a payment is recorded.
+
+---
+
+### 4. Dues and Collection Reports
+
+The application provides basic financial reporting.
+
+The owner can view:
+
+* All bills.
+* Pending bills.
+* Total amount collected.
+* Total pending amount.
+
+This provides a quick overview of the society's maintenance collection status.
+
+---
+
+### 5. User Management
+
+The system supports multiple user roles.
+
+Currently supported roles are:
+
+* **OWNER**
+* **TENANT**
+
+The owner can:
+
+* View registered users.
+* Create tenant accounts.
+* Assign a tenant account to an existing flat.
+* Prevent duplicate usernames.
+
+Tenant accounts contain:
+
+* Username
+* Password
+* Tenant name
+* Flat number
+* Role
+
+---
+
+### 6. Authentication
+
+The GUI provides a login system for accessing the application.
+
+Users log in using:
+
+* Username
+* Password
+
+After successful authentication, the system identifies the user's role.
+
+The application provides:
+
+**Owner → Owner Dashboard**
+
+**Tenant → Tenant Dashboard**
+
+Invalid credentials are rejected with an appropriate error message.
+
+### Default Owner Account
+
+A default owner account is automatically created if no owner account exists.
+
+```text
+Username: owner
+Password: owner123
+Role: OWNER
+```
+
+### Tenant Accounts
+
+There is **no fixed default tenant account**.
+
+Tenant accounts are created by the owner through the User Management section.
+
+For example, a tenant account can be created with:
+
+```text
+Username: tenant1
+Password: tenant123
+Tenant Name: Paridhi
+Flat No: 01
+Role: TENANT
+```
+
+This is an example test account and is not automatically created by the application.
+
+---
+
+## 7. Owner Dashboard
+
+After logging in as an owner, the owner can access the main management dashboard.
+
+The dashboard contains sections for:
+
+* Flats
+* Generate Bills
+* Record Payment
+* Dues Report
+* Charts
+* Search Flat
+* Complaints
+* Users
+
+The owner can manage society data from a single interface.
+
+---
+
+## 8. Tenant Dashboard
+
+Tenants have a separate dashboard after logging in.
+
+The tenant dashboard provides access to information related to their assigned flat.
+
+Sections include:
+
+* My Dashboard
+* My Bills
+* My Payments
+* My Complaints
+
+Tenants can view their bills and payment history and can raise complaints.
+
+---
+
+## 9. Complaint Management
+
+The complaint management module allows tenants to communicate issues to the society owner.
+
+Tenants can submit:
+
+* Subject
+* Description
+* Flat number
+* Tenant information
+* Complaint date
+
+Each complaint receives a unique complaint ID.
+
+### Complaint Lifecycle
+
+A complaint follows a simple workflow:
+
+```text
+Tenant raises complaint
+        ↓
+Complaint created
+        ↓
+Status = OPEN
+        ↓
+Owner views complaint
+        ↓
+Owner responds
+        ↓
+Owner marks complaint as DONE
+```
+
+The owner can:
+
+* View all complaints.
+* View open complaints.
+* View complaint details.
+* Respond to complaints.
+* Mark complaints as completed.
+
+Tenants can view complaints associated with their flat.
+
+---
+
+## 10. Persistent Data Storage
+
+The application uses CSV files for persistent storage.
+
+The following data files are used:
+
+```text
+data/
+├── flats.csv
+├── bills.csv
+├── payments.csv
+├── users.csv
+└── complaints.csv
+```
+
+Data is loaded when the application starts and saved during application operations/exit depending on the interface.
+
+This allows data to persist between different executions of the program.
+
+---
+
+## Technologies and Tools Used
+
+### Programming Language
+
+* **Java**
+
+### GUI
+
+* **Java Swing**
+* **AWT**
+
+### Data Storage
+
+* **CSV files**
+* Java File I/O
+* `java.io`
+* `java.nio.file`
+
+### Data Structures
+
+The project uses Java collections such as:
+
+* `ArrayList`
+* `LinkedHashMap`
+* `List`
+* `Map`
+* `Collection`
+
+### Development Tools
+
+* Visual Studio Code
+* Java Development Kit (JDK)
+* Git
+* GitHub
 
 ---
 
 ## Project Structure
 
 ```text
-smart-society/
+Housing-Society-Management/
+│
+├── Main.java
+├── LoginGUI.java
+├── MainGUI.java
+├── TenantDashboard.java
+│
+├── DuesManager.java
+├── FileHandler.java
 │
 ├── Flat.java
 ├── Bill.java
 ├── Payment.java
 ├── User.java
-├── Complaint.java
+└── Complaint.java
 │
-├── DuesManager.java
-├── FileHandler.java
+├── data/
+│   ├── flats.csv
+│   ├── bills.csv
+│   ├── payments.csv
+│   ├── users.csv
+│   └── complaints.csv
 │
-├── Main.java
-├── MainGUI.java
-├── LoginGUI.java
-├── TenantDashboard.java
-│
-├── statement.md
-├── README.md
-│
-└── data/
-    ├── flats.csv
-    ├── bills.csv
-    ├── payments.csv
-    ├── users.csv
-    └── complaints.csv
+└── README.md
+```
 
-Main classes 
-| Class                  | Responsibility                            |
-| ---------------------- | ----------------------------------------- |
-| `Flat.java`            | Represents a housing society flat         |
-| `Bill.java`            | Represents a monthly maintenance bill     |
-| `Payment.java`         | Represents a payment transaction          |
-| `User.java`            | Represents owner and tenant accounts      |
-| `Complaint.java`       | Represents tenant complaints              |
-| `DuesManager.java`     | Core business logic and data management   |
-| `FileHandler.java`     | CSV persistence                           |
-| `Main.java`            | Command-line interface                    |
-| `MainGUI.java`         | Owner/administrator GUI                   |
-| `LoginGUI.java`        | Authentication and role-based entry point |
-| `TenantDashboard.java` | Tenant-specific GUI                       |
+---
 
-Architecture
+## System Architecture
 
-The application follows a simple layered structure:
-                User
-                 |
-        +--------+--------+
-        |                 |
-   Main.java          LoginGUI.java
-  Console UI             |
-                    +----+----+
-                    |         |
-                 Owner      Tenant
-                    |         |
-                MainGUI   TenantDashboard
-                    \         /
-                     \       /
-                    DuesManager
-                         |
-                    FileHandler
-                         |
-                    CSV Storage
+The application follows a simple layered structure.
 
-The user interfaces communicate with DuesManager, which contains the core application logic.
+```text
+                    USER
+                     |
+          +----------+----------+
+          |                     |
+     Console UI              GUI
+     Main.java             LoginGUI.java
+                                |
+                    +-----------+-----------+
+                    |                       |
+                 OWNER                    TENANT
+                    |                       |
+                MainGUI              TenantDashboard
+                    \                       /
+                     \                     /
+                      +-------------------+
+                              |
+                        DuesManager
+                              |
+                        FileHandler
+                              |
+                       CSV Data Files
+```
 
-FileHandler handles reading and writing persistent data to CSV files.
-Steps to Install & Run
-Prerequisites
+### Main Components
 
-Install Java JDK 17 or later.
+#### Main.java
 
-Check the installation:
+Provides the command-line interface.
 
+It allows users to interact with:
+
+* Flat management
+* Bill generation
+* Payments
+* Reports
+* User management
+* Complaint management
+
+#### LoginGUI.java
+
+Acts as the GUI entry point.
+
+It handles:
+
+* Username input
+* Password input
+* Authentication
+* Role-based navigation
+
+#### MainGUI.java
+
+Provides the owner's graphical dashboard.
+
+#### TenantDashboard.java
+
+Provides the tenant's graphical dashboard.
+
+#### DuesManager.java
+
+Contains the main application/business logic.
+
+It manages:
+
+* Flats
+* Bills
+* Payments
+* Users
+* Complaints
+
+#### FileHandler.java
+
+Handles reading and writing application data to CSV files.
+
+#### Flat.java
+
+Represents a society flat.
+
+#### Bill.java
+
+Represents a monthly maintenance bill.
+
+#### Payment.java
+
+Represents a payment made against a bill.
+
+#### User.java
+
+Represents an application user and their role.
+
+#### Complaint.java
+
+Represents a tenant complaint and its status.
+
+---
+
+# Installation and Setup
+
+## Requirements
+
+Before running the project, make sure Java is installed.
+
+Recommended:
+
+```text
+JDK 17 or later
+```
+
+Check your Java version using:
+
+```bash
 java -version
+```
+
+Check the Java compiler using:
+
+```bash
 javac -version
-Clone the Repository
-git clone https://github.com/paridhi091/smart-society.git
-cd smart-society
-Compile the Project
+```
+
+Git is recommended for obtaining the project from GitHub.
+
+---
+
+## Clone the Repository
+
+Clone the repository using:
+
+```bash
+git clone <YOUR-GITHUB-REPOSITORY-URL>
+```
+
+Move into the project directory:
+
+```bash
+cd <PROJECT-FOLDER>
+```
+
+---
+
+# Running the Project
+
+The project can be executed directly from the command line.
+
+This is important because the project is designed to support command-line execution without requiring a GUI-based setup.
+
+---
+
+## Option 1: Run the Console Application
 
 Compile all Java files:
+
+```bash
 javac *.java
-Run the Console Version
+```
 
-The console version can be executed directly from the terminal:
+Run the console application:
 
-java Main   
-Run the GUI Version
+```bash
+java Main
+```
 
-For the graphical application, start:
+The console menu will appear:
 
+```text
+=========================================
+      HOUSING SOCIETY MANAGEMENT
+=========================================
+1. Add Flat
+2. Generate Monthly Bills
+3. Record Payment
+4. View Dues Report
+5. Search Flat by Number
+6. User Management
+7. Complaint Management
+8. Save & Exit
+=========================================
+Enter choice:
+```
+
+---
+
+## Option 2: Run the Graphical Application
+
+Compile the project:
+
+```bash
+javac *.java
+```
+
+Run the GUI:
+
+```bash
 java LoginGUI
+```
 
-The login screen provides role-based access.
+The login screen will appear.
 
-Default Owner Account
+Use the default owner credentials:
+
+```text
 Username: owner
 Password: owner123
+```
 
-After logging in as the owner, tenant accounts can be created through User Management.                 
+After successful login, the Owner Dashboard will open.
+
+---
+
+# How to Use the Application
+
+## Owner Workflow
+
+A typical owner workflow is:
+
+```text
+Login
+  ↓
+Owner Dashboard
+  ↓
+Add Flats
+  ↓
+Generate Monthly Bills
+  ↓
+Record Payments
+  ↓
+View Dues Report
+  ↓
+Manage Tenant Accounts
+  ↓
+Manage Complaints
+```
+
+---
+
+## Creating a Tenant Account
+
+1. Log in as the owner.
+2. Open the **Users** section.
+3. Enter a username.
+4. Enter a password.
+5. Enter the tenant's name.
+6. Enter an existing flat number.
+7. Click **Create Tenant**.
+8. The tenant account is stored in `users.csv`.
+
+The tenant can then use those credentials to log in.
+
+---
+
+## Tenant Workflow
+
+A typical tenant workflow is:
+
+```text
+Tenant Login
+     ↓
+Tenant Dashboard
+     ↓
+View Bills
+     ↓
+View Payments
+     ↓
+Raise Complaint
+     ↓
+Track Complaint
+```
+
+
+
+
+
+# Screenshots
+
+Screenshots can be added to demonstrate the working application.
+
+Recommended screenshots include:
+
+### Login Screen
+
+```text
+screenshots/login.png
+```
+
+### Owner Dashboard
+
+```text
+screenshots/owner-dashboard.png
+```
+
+### Tenant Dashboard
+
+```text
+screenshots/tenant-dashboard.png
+```
+
+### Flat Management
+
+```text
+screenshots/flats.png
+```
+
+### Bill Management
+
+```text
+screenshots/bills.png
+```
+
+### User Management
+
+```text
+screenshots/users.png
+```
+
+### Complaint Management
+
+```text
+screenshots/complaints.png
+```
+
+If the screenshots are stored in the repository, they can be displayed in this README using Markdown.
+
+Example:
+
+```markdown
+![Login Screen](screenshots/login.png)
+```
+
+---
+
+

@@ -420,10 +420,6 @@ cd smart-society
 
 # Running the Project
 
-The project can be executed directly from the command line.
-
-This is important because the project is designed to support command-line execution without requiring a GUI-based setup.
-
 ---
 
 ## Option 1: Run the Console Application

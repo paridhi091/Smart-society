@@ -51,6 +51,8 @@ public class MainGUI extends JFrame {
         manager.loadFlats(FileHandler.loadFlats());
         manager.loadBills(FileHandler.loadBills());
         manager.loadPayments(FileHandler.loadPayments());
+        manager.loadUsers(FileHandler.loadUsers());
+        manager.loadComplaints(FileHandler.loadComplaints());
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -72,6 +74,7 @@ public class MainGUI extends JFrame {
         tabs.addTab("Dues Report", buildReportPanel());
         tabs.addTab("Charts", buildChartsPanel());
         tabs.addTab("Search Flat", buildSearchPanel());
+        tabs.addTab("Complaints", buildComplaintsPanel());
 
         add(tabs);
         refreshAll();
@@ -229,6 +232,236 @@ public class MainGUI extends JFrame {
         return panel;
     }
 
+    private JPanel buildComplaintsPanel() {
+    JPanel panel = new JPanel(new BorderLayout(10, 10));
+    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    // ---------- Complaint table ----------
+
+    DefaultTableModel complaintsModel = new DefaultTableModel(
+            new Object[]{
+                    "ID",
+                    "Flat No",
+                    "Tenant",
+                    "Subject",
+                    "Description",
+                    "Status",
+                    "Response",
+                    "Date"
+            }, 0) {
+
+        @Override
+        public boolean isCellEditable(int row, int col) {
+            return false;
+        }
+    };
+
+    JTable complaintsTable = new JTable(complaintsModel);
+    complaintsTable.setAutoCreateRowSorter(true);
+
+    panel.add(new JScrollPane(complaintsTable), BorderLayout.CENTER);
+
+    // ---------- Raise complaint form ----------
+
+    JPanel form = new JPanel(new GridLayout(5, 2, 8, 8));
+
+    JTextField flatNoField = new JTextField();
+    JTextField tenantNameField = new JTextField();
+    JTextField subjectField = new JTextField();
+
+    JTextArea descriptionArea = new JTextArea(4, 20);
+    descriptionArea.setLineWrap(true);
+    descriptionArea.setWrapStyleWord(true);
+
+    JButton raiseBtn = new JButton("Raise Complaint");
+
+    form.add(new JLabel("Flat No:"));
+    form.add(flatNoField);
+
+    form.add(new JLabel("Tenant Name:"));
+    form.add(tenantNameField);
+
+    form.add(new JLabel("Subject:"));
+    form.add(subjectField);
+
+    form.add(new JLabel("Description:"));
+    form.add(new JScrollPane(descriptionArea));
+
+    form.add(new JLabel(""));
+    form.add(raiseBtn);
+
+    panel.add(form, BorderLayout.SOUTH);
+
+    // ---------- Owner response ----------
+
+    JPanel responsePanel = new JPanel(new GridLayout(2, 2, 8, 8));
+
+    JTextField complaintIdField = new JTextField();
+    JTextField responseField = new JTextField();
+
+    JButton respondBtn = new JButton("Respond");
+    JButton doneBtn = new JButton("Mark as Done");
+
+    responsePanel.add(new JLabel("Complaint ID:"));
+    responsePanel.add(complaintIdField);
+
+    responsePanel.add(new JLabel("Response:"));
+    responsePanel.add(responseField);
+
+    JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+    actionPanel.add(respondBtn);
+    actionPanel.add(doneBtn);
+
+    JPanel bottomPanel = new JPanel(new BorderLayout());
+    bottomPanel.add(form, BorderLayout.CENTER);
+    bottomPanel.add(responsePanel, BorderLayout.NORTH);
+    bottomPanel.add(actionPanel, BorderLayout.SOUTH);
+
+    panel.remove(form);
+    panel.add(bottomPanel, BorderLayout.SOUTH);
+
+    // ---------- Raise complaint ----------
+
+    raiseBtn.addActionListener(e -> {
+
+        String flatNo = flatNoField.getText().trim();
+        String tenantName = tenantNameField.getText().trim();
+        String subject = subjectField.getText().trim();
+        String description = descriptionArea.getText().trim();
+
+        if (flatNo.isEmpty() ||
+                tenantName.isEmpty() ||
+                subject.isEmpty() ||
+                description.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please fill all complaint details."
+            );
+            return;
+        }
+
+        if (manager.getFlat(flatNo) == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Flat does not exist."
+            );
+            return;
+        }
+
+        String date = java.time.LocalDate.now().toString();
+
+        manager.raiseComplaint(
+                flatNo,
+                tenantName,
+                subject,
+                description,
+                date
+        );
+
+        persist();
+
+        flatNoField.setText("");
+        tenantNameField.setText("");
+        subjectField.setText("");
+        descriptionArea.setText("");
+
+        refreshComplaintsTable(complaintsModel);
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Complaint raised successfully."
+        );
+    });
+
+    // ---------- Respond ----------
+
+    respondBtn.addActionListener(e -> {
+
+        try {
+            int id = Integer.parseInt(
+                    complaintIdField.getText().trim()
+            );
+
+            String response = responseField.getText().trim();
+
+            if (response.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Please enter a response."
+                );
+                return;
+            }
+
+            if (manager.respondToComplaint(id, response)) {
+
+                persist();
+                refreshComplaintsTable(complaintsModel);
+
+                responseField.setText("");
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Response added successfully."
+                );
+
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Complaint ID not found."
+                );
+            }
+
+        } catch (NumberFormatException ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter a valid complaint ID."
+            );
+        }
+    });
+
+    // ---------- Mark done ----------
+
+    doneBtn.addActionListener(e -> {
+
+        try {
+            int id = Integer.parseInt(
+                    complaintIdField.getText().trim()
+            );
+
+            if (manager.markComplaintDone(id)) {
+
+                persist();
+                refreshComplaintsTable(complaintsModel);
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Complaint marked as DONE."
+                );
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Complaint ID not found."
+                );
+            }
+
+        } catch (NumberFormatException ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please enter a valid complaint ID."
+            );
+        }
+    });
+
+    refreshComplaintsTable(complaintsModel);
+
+    return panel;
+}
     // ---------- Generate Bills tab ----------
 
     private JPanel buildBillsPanel() {
@@ -558,7 +791,25 @@ public class MainGUI extends JFrame {
         }
         return sb.toString();
     }
+     
+    private void refreshComplaintsTable(DefaultTableModel model) {
 
+    model.setRowCount(0);
+
+    for (Complaint c : manager.getAllComplaints()) {
+
+        model.addRow(new Object[]{
+                c.getId(),
+                c.getFlatNo(),
+                c.getTenantName(),
+                c.getSubject(),
+                c.getDescription(),
+                c.getStatus(),
+                c.getResponse().isEmpty() ? "-" : c.getResponse(),
+                c.getCreatedDate()
+        });
+    }
+}
     // ---------- Helpers ----------
 
     private boolean isValidMonth(String month) {
@@ -582,6 +833,8 @@ public class MainGUI extends JFrame {
         FileHandler.saveFlats(manager.getAllFlats());
         FileHandler.saveBills(manager.getAllBills());
         FileHandler.savePayments(manager.getAllPayments());
+        FileHandler.saveUsers(manager.getAllUsers());
+        FileHandler.saveComplaints(manager.getAllComplaints());
     }
 
     private void saveAndExit() {
@@ -596,3 +849,4 @@ public class MainGUI extends JFrame {
         SwingUtilities.invokeLater(() -> new MainGUI().setVisible(true));
     }
 }
+

@@ -21,7 +21,7 @@ import java.util.TreeMap;
  */
 public class MainGUI extends JFrame {
 
-    private final DuesManager manager = new DuesManager();
+    private DuesManager manager;
 
     // Flats tab
     private DefaultTableModel flatsModel;
@@ -44,8 +44,9 @@ public class MainGUI extends JFrame {
     private BarChartPanel collectionsChart;
     private PieChartPanel duesChart;
 
-    public MainGUI() {
+    public MainGUI(DuesManager manager) {
         super("Housing Society Dues Tracker");
+        this.manager=manager ;
 
         FileHandler.ensureDataFolder();
         manager.loadFlats(FileHandler.loadFlats());
@@ -53,6 +54,7 @@ public class MainGUI extends JFrame {
         manager.loadPayments(FileHandler.loadPayments());
         manager.loadUsers(FileHandler.loadUsers());
         manager.loadComplaints(FileHandler.loadComplaints());
+        manager.ensureDefaultOwner();
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -843,10 +845,8 @@ public class MainGUI extends JFrame {
         System.exit(0);
     }
 
-    // ---------- Entry point ----------
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MainGUI().setVisible(true));
-    }
+
+    
 }
 

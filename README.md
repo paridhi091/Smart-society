@@ -548,7 +548,17 @@ Track Complaint
 
 # Screenshots
 
-C:\Users\parid\Project\screenshots\Screenshot 2026-09-17 213705.png
+<img width="532" height="367" alt="Screenshot 2026-09-17 213705" src="https://github.com/user-attachments/assets/c827855a-ea7a-4b45-b137-dc2c37f9850e" />
+<img width="1162" height="765" alt="Screenshot 2026-09-17 213912" src="https://github.com/user-attachments/assets/7ed5e142-ff07-42c7-9d87-5d56381c0b1d" />
+<img width="1162" height="762" alt="Screenshot 2026-09-17 213934" src="https://github.com/user-attachments/assets/29e123a6-43fd-49ea-aaec-953456d07f20" />
+<img width="1162" height="737" alt="Screenshot 2026-09-17 214701" src="https://github.com/user-attachments/assets/4c6a4c16-c155-4a11-ae80-a69c0e5271fe" />
+
+
+
+
+
+
+
 ---
 
 

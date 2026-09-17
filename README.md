@@ -373,77 +373,6 @@ The application follows a simple layered structure.
                        CSV Data Files
 ```
 
-### Main Components
-
-#### Main.java
-
-Provides the command-line interface.
-
-It allows users to interact with:
-
-* Flat management
-* Bill generation
-* Payments
-* Reports
-* User management
-* Complaint management
-
-#### LoginGUI.java
-
-Acts as the GUI entry point.
-
-It handles:
-
-* Username input
-* Password input
-* Authentication
-* Role-based navigation
-
-#### MainGUI.java
-
-Provides the owner's graphical dashboard.
-
-#### TenantDashboard.java
-
-Provides the tenant's graphical dashboard.
-
-#### DuesManager.java
-
-Contains the main application/business logic.
-
-It manages:
-
-* Flats
-* Bills
-* Payments
-* Users
-* Complaints
-
-#### FileHandler.java
-
-Handles reading and writing application data to CSV files.
-
-#### Flat.java
-
-Represents a society flat.
-
-#### Bill.java
-
-Represents a monthly maintenance bill.
-
-#### Payment.java
-
-Represents a payment made against a bill.
-
-#### User.java
-
-Represents an application user and their role.
-
-#### Complaint.java
-
-Represents a tenant complaint and its status.
-
----
 
 # Installation and Setup
 
@@ -478,13 +407,13 @@ Git is recommended for obtaining the project from GitHub.
 Clone the repository using:
 
 ```bash
-git clone <YOUR-GITHUB-REPOSITORY-URL>
+git clone https://github.com/paridhi091/smart-society.git
 ```
 
 Move into the project directory:
 
 ```bash
-cd <PROJECT-FOLDER>
+cd smart-society
 ```
 
 ---

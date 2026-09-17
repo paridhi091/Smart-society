@@ -223,7 +223,7 @@ public class TenantDashboard extends JFrame {
                     payment.getFlatNo(),
                     payment.getMonth(),
                     payment.getAmount(),
-                    payment.getDate(),
+                    payment.getPaymentDate(),
                     payment.getMode()
             });
         }

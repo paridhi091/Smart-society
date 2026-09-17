@@ -77,6 +77,7 @@ public class MainGUI extends JFrame {
         tabs.addTab("Charts", buildChartsPanel());
         tabs.addTab("Search Flat", buildSearchPanel());
         tabs.addTab("Complaints", buildComplaintsPanel());
+        tabs.addTab("Users", buildUsersPanel());
 
         add(tabs);
         refreshAll();
@@ -682,7 +683,22 @@ public class MainGUI extends JFrame {
         panel.add(new JScrollPane(searchResultArea), BorderLayout.CENTER);
         return panel;
     }
+    private void refreshUsersTable(DefaultTableModel model) {
 
+    model.setRowCount(0);
+
+    for (User user : manager.getAllUsers()) {
+
+        model.addRow(new Object[]{
+                user.getUsername(),
+                user.getName(),
+                user.getFlatNo().isEmpty()
+                        ? "-"
+                        : user.getFlatNo(),
+                user.getRole()
+        });
+    }
+}
     // ---------- Charts tab ----------
 
     private JPanel buildChartsPanel() {
@@ -705,6 +721,160 @@ public class MainGUI extends JFrame {
 
         return panel;
     }
+    private JPanel buildUsersPanel() {
+
+    JPanel panel = new JPanel(new BorderLayout(10, 10));
+    panel.setBorder(
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+    );
+    
+
+    // -----------------------------
+    // User table
+    // -----------------------------
+
+    DefaultTableModel usersModel = new DefaultTableModel(
+            new Object[]{
+                    "Username",
+                    "Name",
+                    "Flat No",
+                    "Role"
+            }, 0) {
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+
+    JTable usersTable = new JTable(usersModel);
+
+    panel.add(
+            new JScrollPane(usersTable),
+            BorderLayout.CENTER
+    );
+
+    // -----------------------------
+    // Form
+    // -----------------------------
+
+    JPanel form = new JPanel(
+            new GridLayout(5, 2, 8, 8)
+    );
+
+    JTextField usernameField = new JTextField();
+    JPasswordField passwordField = new JPasswordField();
+    JTextField nameField = new JTextField();
+    JTextField flatNoField = new JTextField();
+
+    JButton createButton =
+            new JButton("Create Tenant");
+
+    form.add(new JLabel("Username:"));
+    form.add(usernameField);
+
+    form.add(new JLabel("Password:"));
+    form.add(passwordField);
+
+    form.add(new JLabel("Tenant Name:"));
+    form.add(nameField);
+
+    form.add(new JLabel("Flat No:"));
+    form.add(flatNoField);
+
+    form.add(new JLabel(""));
+    form.add(createButton);
+
+    panel.add(form, BorderLayout.SOUTH);
+
+    // -----------------------------
+    // Create tenant
+    // -----------------------------
+
+    createButton.addActionListener(e -> {
+
+        String username =
+                usernameField.getText().trim();
+
+        String password =
+                new String(passwordField.getPassword());
+
+        String name =
+                nameField.getText().trim();
+
+        String flatNo =
+                flatNoField.getText().trim();
+
+        if (username.isEmpty() ||
+                password.isEmpty() ||
+                name.isEmpty() ||
+                flatNo.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please fill all fields."
+            );
+
+            return;
+        }
+
+        if (manager.getUser(username) != null) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Username already exists."
+            );
+
+            return;
+        }
+
+        if (manager.getFlat(flatNo) == null) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Flat does not exist."
+            );
+
+            return;
+        }
+
+        boolean success =
+                manager.addTenantUser(
+                        username,
+                        password,
+                        name,
+                        flatNo
+                );
+
+        if (success) {
+
+            persist();
+
+            refreshUsersTable(usersModel);
+
+            usernameField.setText("");
+            passwordField.setText("");
+            nameField.setText("");
+            flatNoField.setText("");
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Tenant account created successfully."
+            );
+
+        } else {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Could not create tenant account."
+            );
+        }
+    });
+
+    refreshUsersTable(usersModel);
+
+    return panel;
+}
 
     // ---------- Refresh logic ----------
 
